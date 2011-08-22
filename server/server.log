@@ -1,0 +1,9 @@
+2011-08-22 19:55:18,561 INFO MainThread starting server
+2011-08-22 19:55:18,561 INFO MainThread Attempting to open socket
+2011-08-22 19:55:18,561 INFO MainThread Socket open
+2011-08-22 19:55:18,561 INFO MainThread Running
+2011-08-22 19:55:19,309 INFO MainThread Server shutdown requested.
+2011-08-22 19:55:19,309 INFO MainThread Close client sockets.
+2011-08-22 19:55:19,309 INFO MainThread Closing server socket
+2011-08-22 19:55:19,309 INFO MainThread Terminating client threads
+2011-08-22 19:55:19,309 INFO MainThread Client threads terminated
