@@ -55,6 +55,10 @@ class Client:
       except socket.error:
         print 'an error occurred'
 
+    def spam(self):
+      while 1:
+        self.send('a')
+
 if __name__ == '__main__':
 
     clientLogger = Logger('client.log')
@@ -63,6 +67,6 @@ if __name__ == '__main__':
     try:
       c = Client(sys.argv[1]+'.narga.sun.ac.za', int(sys.argv[2]))
       c.open_socket()
-      c.run()
+      c.spam()
     except IndexError:
       print 'Enter name and port' 

@@ -110,11 +110,12 @@ class Client(threading.Thread): #client thread
           serverLogger.logger.warn("socket closed on receive")
 
         if data:
-          print 'data length',len(data)
-          print 'data',data
+          #print 'data length',len(data)
+          #print 'data',data
+          print data
         else:
             self.client.close()
-            serverLogger.logger.info(self.username+ 'has disconnected')
+            serverLogger.logger.info('client disconnected')
             self.running = 0
 
     serverLogger.logger.info("Thread terminating") 
