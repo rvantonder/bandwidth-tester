@@ -13,6 +13,9 @@ import logging
 import os
 import pickle
 import time
+import datetime
+
+global amount
 
 class ServerLogger:
   def __init__(self, logfilename):
@@ -43,6 +46,7 @@ class Server:
     self.size = 1024
     self.socket = None
     self.threads = []
+    self.amount = 0
 
   def open_socket(self):
     serverLogger.logger.info("Attempting to open socket")
@@ -93,6 +97,22 @@ class Server:
 
     serverLogger.logger.info('Client threads terminated')
 
+class Bandwidth(threading.Thread):
+  def __init__(self):
+    self.start = 0
+    self.end = 0
+    self.amount_now = 0
+
+  def start(self):
+    self.start = time.time.now()
+
+  def end(self):
+    self.amount_now = amount
+    self.end = time.time.now()
+
+  def get_bandwidth(self):
+    return self.amount/(self.end-self.start)
+
 class Client(threading.Thread): #client thread
   def __init__(self,(client,address)):
     threading.Thread.__init__(self) 
@@ -110,9 +130,14 @@ class Client(threading.Thread): #client thread
           serverLogger.logger.warn("socket closed on receive")
 
         if data:
+          #start = time.time()
           #print 'data length',len(data)
           #print 'data',data
-          print data
+          #print data
+          print len(data)
+          #amount += len(data)
+          #end = time.time() 
+          #print amount/(end-start)
         else:
             self.client.close()
             serverLogger.logger.info('client disconnected')
@@ -129,5 +154,6 @@ if __name__ == "__main__":
     s = Server(int(sys.argv[1]))
     print 'Hit any key to terminate server'
     s.run() 
+    print 'continue'
   except IndexError:
     print 'Usage: python server.py <port number>'

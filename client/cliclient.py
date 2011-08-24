@@ -56,8 +56,13 @@ class Client:
         print 'an error occurred'
 
     def spam(self):
+
+      buff = '\0' * 341024 
+      print buff
+      print 'buff',len(buff)
+
       while 1:
-        self.send('a')
+        self.send(buff)
 
 if __name__ == '__main__':
 
