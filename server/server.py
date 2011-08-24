@@ -111,6 +111,7 @@ class Client(threading.Thread): #client thread
 
         if data:
           print 'data length',len(data)
+          print 'data',data
         else:
             self.client.close()
             serverLogger.logger.info(self.username+ 'has disconnected')

@@ -32,34 +32,11 @@ class Client:
         self.socket.close()
         clientLogger.logger.info('Connection closed.')
 
-    def request_username(self):
-        user =  raw_input('Please enter a username: ')
-
-        try:
-            self.open_socket()
-        except socket.error:
-            print "Error. Server refused connection."
-            clientLogger.logger.exception('Server refused connection.')
-            return False
-        clientLogger.logger.info('Connection open.')
-
-        self.send('request:' + user)
-        response = self.socket.recv(self.size)
-        if (response == 'REJECT'):
-            self.close_socket()
-            print 'Username already in use.'
-            clientLogger.logger.info('Username ' + user + ' already in use.')
-            return False
-        elif (response == 'ACCEPT'):
-            print 'Welcome ' + user
-            clientLogger.logger.info('Username ' + user + ' accepted by server.')
-            self.username = user
-            return True
-    
     def send(self, message):
         self.socket.send(message)
          
     def run(self):       
+      try:
         input = [self.socket, sys.stdin]
 
         while 1:
@@ -75,16 +52,17 @@ class Client:
                     response = self.socket.recv(self.size)
                     sys.stdout.write(response)
         self.close_socket()
+      except socket.error:
+        print 'an error occurred'
 
 if __name__ == '__main__':
 
     clientLogger = Logger('client.log')
     clientLogger.logger.info('Starting client.');
 
-    c = Client(sys.argv[1], int(sys.argv[2]))
-
-    if c.request_username():
-        c.run()
-    else:
-        print 'Something went wrong, restart client.'
-
+    try:
+      c = Client(sys.argv[1]+'.narga.sun.ac.za', int(sys.argv[2]))
+      c.open_socket()
+      c.run()
+    except IndexError:
+      print 'Enter name and port' 
