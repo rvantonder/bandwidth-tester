@@ -46,7 +46,7 @@ class Server:
     self.size = 1024
     self.socket = None
     self.threads = []
-    self.amount = 0
+    amount[0] = 0
 
   def open_socket(self):
     serverLogger.logger.info("Attempting to open socket")
@@ -97,21 +97,22 @@ class Server:
 
     serverLogger.logger.info('Client threads terminated')
 
-class Bandwidth(threading.Thread):
+class BandwidthMonitor(threading.Thread):
   def __init__(self):
     self.start = 0
     self.end = 0
     self.amount_now = 0
 
-  def start(self):
-    self.start = time.time.now()
+  def initiate(self):
+    self.start = time.time()
 
-  def end(self):
-    self.amount_now = amount
-    self.end = time.time.now()
+  def terminate(self):
+    self.amount_now = amount[0]
+    amount[0] = 0
+    self.end = time.time()
 
   def get_bandwidth(self):
-    return self.amount/(self.end-self.start)
+    return self.amount_now/(self.end-self.start)
 
 class Client(threading.Thread): #client thread
   def __init__(self,(client,address)):
@@ -134,11 +135,12 @@ class Client(threading.Thread): #client thread
           #print 'data length',len(data)
           #print 'data',data
           #print data
-          print len(data)
-          #amount += len(data)
+          #print len(data)
+          amount[0] += len(data)
           #end = time.time() 
           #print amount/(end-start)
         else:
+            amount[0] = 0
             self.client.close()
             serverLogger.logger.info('client disconnected')
             self.running = 0
@@ -148,12 +150,29 @@ class Client(threading.Thread): #client thread
 if __name__ == "__main__":
   try:
     connections = {} 
+
+    amount = []
+    amount.append(0)
     
     serverLogger = ServerLogger('server.log') 
     serverLogger.logger.info("starting server")
     s = Server(int(sys.argv[1]))
     print 'Hit any key to terminate server'
-    s.run() 
+    t = threading.Thread(target = s.run)
+    t.setDaemon(False)
+    t.start()
     print 'continue'
+
+    b = BandwidthMonitor()    
+
+    while 1:
+      b.initiate()
+      time.sleep(1)
+      b.terminate()
+      print str(b.get_bandwidth()/(1024*1024)) + ' MBytes/second'
+      
   except IndexError:
     print 'Usage: python server.py <port number>'
+
+
+#time.sleep(1), sleep for 1 second
