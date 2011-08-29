@@ -14,6 +14,11 @@ import os
 import pickle
 import time
 import datetime
+import signal
+
+def signal_handler(signal, frame):
+  print 'You pressed stuff'
+  sys.exit(0)
 
 global amount
 
@@ -82,8 +87,13 @@ class Server:
 
             elif s == sys.stdin:
                 # handle standard input
-                junk = sys.stdin.readline()
-                running = 0
+                line = sys.stdin.readline()
+                if line.strip() == 'q':
+                  running = 0
+                else:
+                  print "Type 'q' to stop the server"
+
+    print 'Received signal to stop'
 
     serverLogger.logger.info('Server shutdown requested.')
     serverLogger.logger.info('Close client sockets.')
@@ -93,8 +103,9 @@ class Server:
 
     serverLogger.logger.info('Terminating client threads')
     for c in self.threads:
+        c.running = 0
         c.join()
-
+        
     serverLogger.logger.info('Client threads terminated')
 
 class BandwidthMonitor(threading.Thread):
@@ -131,14 +142,7 @@ class Client(threading.Thread): #client thread
           serverLogger.logger.warn("socket closed on receive")
 
         if data:
-          #start = time.time()
-          #print 'data length',len(data)
-          #print 'data',data
-          #print data
-          #print len(data)
           amount[0] += len(data)
-          #end = time.time() 
-          #print amount/(end-start)
         else:
             amount[0] = 0
             self.client.close()
@@ -149,7 +153,6 @@ class Client(threading.Thread): #client thread
 
 if __name__ == "__main__":
   try:
-    connections = {} 
 
     amount = []
     amount.append(0)
@@ -161,7 +164,7 @@ if __name__ == "__main__":
     t = threading.Thread(target = s.run)
     t.setDaemon(False)
     t.start()
-    print 'continue'
+    print 'Starting Bandwidth monitor'
 
     b = BandwidthMonitor()    
 
