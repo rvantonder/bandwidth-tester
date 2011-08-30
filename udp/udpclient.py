@@ -9,6 +9,10 @@ import socket
 import sys
 import select
 from logger import Logger
+import threading
+import time
+
+global amount
 
 class UDP_Client:
 
@@ -20,6 +24,7 @@ class UDP_Client:
         self.username = ''
         clientLogger = Logger('udpclient.log')
         clientLogger.logger.info('Starting UDP client.');
+        amount[0] = 0
 
     def open_socket(self):
         try:
@@ -44,11 +49,31 @@ class UDP_Client:
           sys.exit(0)
          
     def spam(self):
-      buff = 2048 * '\0'
+      buff = 65507 * '\0' #this is the maximum amount of data we can send. 65536 - 65507 = 29 bytes of 'header and other junk'
       clientLogger.logger.info('Spamming the server now')
       print "Spamming the server now"
       while 1:
         self.send(buff)
+        amount[0] += len(buff)
+
+
+class BandwidthMonitor(threading.Thread):
+  def __init__(self):
+    self.start = 0
+    self.end = 0
+    self.amount_now = 0
+
+  def initiate(self):
+    self.start = time.time()
+
+  def terminate(self):
+    self.amount_now = amount[0]
+    amount[0] = 0
+    self.end = time.time()
+
+  def get_bandwidth(self):
+    return self.amount_now/(self.end-self.start)
+
 
 if __name__ == '__main__':
 
@@ -56,9 +81,23 @@ if __name__ == '__main__':
     clientLogger.logger.info('Starting UDP client')
     print "Starting UDP client"
 
+    amount = []
+    amount.append(0)
+
     try:
       c = UDP_Client(sys.argv[1], int(sys.argv[2]))
       c.open_socket()
-      c.spam()
+      t = threading.Thread(target = c.spam)
+      t.setDaemon(False)
+      t.start()
+
+      b = BandwidthMonitor()
+
+      while 1:
+        b.initiate()
+        time.sleep(1)
+        b.terminate()
+        print str(b.get_bandwidth()/(1024*1024)) + 'MBytes/s OUT'
+
     except IndexError:
       print 'Enter name and port' 

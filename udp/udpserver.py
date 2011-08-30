@@ -39,7 +39,8 @@ class Server:
     self.host = '0.0.0.0' #TODO bind on all possible IP addresses ?wtf?
     self.port = port 
     self.backlog = 5
-    self.size = 1024
+    self.size = 70000 #max size apparenlty like 65520
+    #self.size = 1024
     self.socket = None
     self.threads = []
     amount[0] = 0
@@ -60,30 +61,22 @@ class Server:
 
   def run(self):
     self.open_socket()
-    input = [self.socket,sys.stdin]
     running = 1
 
     serverLogger.logger.info("Running")
     while running:
-        inputready,outputready,exceptready = select.select(input,[],[])
+        try:
+          data, address = self.socket.recvfrom(self.size)
+        except socket.error:
+          serverLogger.logger.warn("Socket closed on receive")
 
-        for s in inputready:
-
-            if s == self.socket:
-                #serverLogger.logger.info("New connection incoming")  
-                #c = Client(self.socket.accept())
-                #c.setDaemon(True)
-                #c.start()
-                #self.threads.append(c)
-                self.receive()
-
-            elif s == sys.stdin:
-                # handle standard input
-                line = sys.stdin.readline()
-                if line.strip() == 'q':
-                  running = 0
-                else:
-                  print "Type 'q' to stop the server"
+        if data:
+          amount[0] += len(data)
+        else:
+            amount[0] = 0
+            #self.client.close()
+            serverLogger.logger.info('Client disconnected')
+            running = 0
 
     print 'Received signal to stop'
 
@@ -132,32 +125,6 @@ class BandwidthMonitor(threading.Thread):
 
   def get_bandwidth(self):
     return self.amount_now/(self.end-self.start)
-
-class Client(threading.Thread): #client thread
-  def __init__(self, (client, address)):
-    threading.Thread.__init__(self) 
-    self.client = client #the socket
-    self.address = address #the address
-    self.size = 1024 #the message size
-    self.username = None
-    self.running = 1 #running state variable
-
-  def run(self):
-    while self.running:
-        try:
-          data, address = self.client.recvfrom(self.size)
-        except socket.error:
-          serverLogger.logger.warn("Socket closed on receive")
-
-        if data:
-          amount[0] += len(data)
-        else:
-            amount[0] = 0
-            self.client.close()
-            serverLogger.logger.info('Client disconnected')
-            self.running = 0
-
-    serverLogger.logger.info("Thread terminating") 
 
 if __name__ == "__main__":
   try:
