@@ -1,4 +1,2 @@
-2011-08-30 09:23:13,600 INFO MainThread Starting UDP client.
-2011-08-30 09:23:13,600 INFO MainThread Spamming the server now
-2011-08-30 09:23:13,614 ERROR MainThread Send request failed
-2011-08-30 09:23:13,615 INFO MainThread Connection closed.
+2011-08-30 10:25:38,304 INFO MainThread Starting UDP client.
+2011-08-30 10:25:38,305 INFO MainThread Spamming the server now

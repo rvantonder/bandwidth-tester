@@ -44,7 +44,7 @@ class UDP_Client:
           sys.exit(0)
          
     def spam(self):
-      buff = 1024 * '\0'
+      buff = 2048 * '\0'
       clientLogger.logger.info('Spamming the server now')
       print "Spamming the server now"
       while 1:

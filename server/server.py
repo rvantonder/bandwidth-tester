@@ -167,8 +167,8 @@ if __name__ == "__main__":
     print 'Starting Bandwidth monitor'
 
     b = BandwidthMonitor()    
-
-    while 1:
+    
+    while monitor:
       b.initiate()
       time.sleep(1)
       b.terminate()
