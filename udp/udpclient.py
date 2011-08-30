@@ -40,6 +40,8 @@ class UDP_Client:
         except socket.error:
           clientLogger.logger.error('Send request failed')
           print "Error, send request failed"
+          self.close_socket()
+          sys.exit(0)
          
     def spam(self):
       buff = 1024 * '\0'
