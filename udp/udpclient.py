@@ -57,7 +57,7 @@ if __name__ == '__main__':
     print "Starting UDP client"
 
     try:
-      c = UDP_Client(sys.argv[1]+'.narga.sun.ac.za', int(sys.argv[2]))
+      c = UDP_Client(sys.argv[1], int(sys.argv[2]))
       c.open_socket()
       c.spam()
     except IndexError:
