@@ -1,0 +1,10 @@
+so, there are 2 ways to 'max out' the bandwidth:
+
+- create more threads
+- have a single thread spam lots
+
+with dccp, we cant have a single thread spam lots, and the time granularity is too small to increase the bandwidth -> we need to make more threads.
+
+what about tcp? how do we approach that in terms of threads? udp?. 
+
+right
