@@ -179,3 +179,6 @@ if __name__ == "__main__":
 
 
 #time.sleep(1), sleep for 1 second
+
+#s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+#s.bind...

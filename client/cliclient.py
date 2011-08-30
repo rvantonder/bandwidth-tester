@@ -27,13 +27,18 @@ class Client:
           self.socket.connect((self.host, self.port))
         except socket.error:
           print "error, server refused connection"
+          sys.exit(0)
 
     def close_socket(self):
         self.socket.close()
         clientLogger.logger.info('Connection closed.')
 
     def send(self, message):
-        self.socket.send(message)
+        try:
+          self.socket.send(message)
+        except socket.error:
+          print 'an error occurred, quiting'
+          sys.exit(0)
          
     def run(self):       
       try:
