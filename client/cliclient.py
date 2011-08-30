@@ -56,8 +56,13 @@ class Client:
         print 'an error occurred'
 
     def spam(self):
+
+      buff = '\0' * 341024 
+      print buff
+      print 'buff',len(buff)
+
       while 1:
-        self.send('a')
+        self.send(buff)
 
 if __name__ == '__main__':
 
@@ -65,7 +70,7 @@ if __name__ == '__main__':
     clientLogger.logger.info('Starting client.');
 
     try:
-      c = Client(sys.argv[1]+'.narga.sun.ac.za', int(sys.argv[2]))
+      c = Client(sys.argv[1], int(sys.argv[2]))
       c.open_socket()
       c.spam()
     except IndexError:
