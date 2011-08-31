@@ -5,6 +5,9 @@ An echo server that uses threads to handle multiple clients at a time.
 Entering any line of input at the terminal will exit the server.
 """
 
+from pylab import *
+from numpy import *
+
 import select
 import socket
 import sys
@@ -66,7 +69,7 @@ class Server:
     serverLogger.logger.info("Running")
     while running:
         try:
-          data, address = self.socket.recvfrom(self.size)
+          data = self.socket.recv(self.size)
         except socket.error:
           serverLogger.logger.warn("Socket closed on receive")
 
@@ -141,13 +144,28 @@ if __name__ == "__main__":
     t.start()
     print 'Starting Bandwidth monitor'
 
+    ion() #?
+
     b = BandwidthMonitor()    
+    x = arange(0,100,1)
+    y = []
+
+    while len(y) < 100:
+      y.append(0)
+    
+    line, = plot(x,y)
+    axis(array([0, 100, 0, 120]))
 
     while 1:
       b.initiate()
       time.sleep(1)
       b.terminate()
-      print str(b.get_bandwidth()/(1024*1024)) + ' MBytes/second'
+      speed = b.get_bandwidth()/(1024*1024) 
+      print str(speed) + ' MBytes/second'
+      y.pop(0)
+      y.append(speed)
+      line.set_ydata(y)
+      draw()
       
   except IndexError:
     print 'Usage: python server.py <port number>'

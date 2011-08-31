@@ -15,7 +15,7 @@ socket.SOCK_DCCP = 6
 socket.IPROTO_DCCP = 33
 socket.SOL_DCCP = 269
 packet_size = 256 #hmmm?
-address = ('localhost',3002)
+address = ('localhost',3000)
 
 
 socket.DCCP_SOCKOPT_AVAILABLE_CCIDS = 12
@@ -85,6 +85,7 @@ class Client(threading.Thread): #client thread
     self.running = 1 #running state variable
 
   def run(self):
+    self.client.send('a') #lol
     while self.running:
         try:
           data = self.client.recv(self.size)

@@ -171,8 +171,9 @@ if __name__ == "__main__":
     t.start()
     print 'Starting Bandwidth monitor'
 
-    b = BandwidthMonitor()    
+    ion() #?
 
+    b = BandwidthMonitor()    
     x = arange(0,100,1)
     y = []
 
@@ -181,10 +182,14 @@ if __name__ == "__main__":
 
     while len(y) < 100:
       y.append(0)
-
+    
     line, = plot(x,y)
+<<<<<<< HEAD
     axis(array([0,100,0,125]))
 
+=======
+    axis(array([0, 100, 0, 120]))
+>>>>>>> 9c7e1f4bfc1d0152f11d6ae0783055119c1054f3
 
     while 1:
       b.initiate()

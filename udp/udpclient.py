@@ -50,7 +50,11 @@ class UDP_Client:
          
     def spam(self):
       #buff = 65507 * '\0' #this is the maximum amount of data we can send. 65536 - 65507 = 29 bytes of 'header and other junk'. Almost certainly results in IP fragmentation
+<<<<<<< HEAD
       buff = 45000 * '\0'
+=======
+      buff = 30000 * '\0'
+>>>>>>> 9c7e1f4bfc1d0152f11d6ae0783055119c1054f3
       #buff = 576 * '\0' #minimum reassembly buffer size, guaranteed size any implementation must support
       #buff = 1024 * '\0'
       clientLogger.logger.info('Spamming the server now')
