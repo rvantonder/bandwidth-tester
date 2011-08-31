@@ -21,15 +21,16 @@ client = socket.socket(socket.AF_INET, socket.SOCK_DCCP, socket.IPROTO_DCCP)
 
 client.setsockopt(socket.SOL_DCCP, socket.DCCP_SOCKOPT_PACKET_SIZE, packet_size)
 client.setsockopt(socket.SOL_DCCP, socket.DCCP_SOCKOPT_SERVICE, True)
-
+print 'a'
 client.connect(address)
+print 'b'
 
 buff = '\0' * 1024
 
 print 'spamming server'
 while True:
 #  try:
-    time.sleep(.1) #.000001 -> this value is too small
+    time.sleep(.0001) #.000001 -> this value is too small
     client.send(buff)
 #  except socket.error: #if we are flooding it
 #    time.sleep(.1) 
