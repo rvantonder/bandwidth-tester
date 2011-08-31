@@ -9,14 +9,13 @@ socket.SOCK_DCCP = 6
 socket.IPROTO_DCCP = 33
 socket.SOL_DCCP = 269
 packet_size = 256 #hmmm?
-address = ('localhost',3001)
+address = ('d38.narga.sun.ac.za',3002)
 
 
 socket.DCCP_SOCKOPT_AVAILABLE_CCIDS = 12
 socket.DCCP_SOCKOPT_CCID = 13
 socket.DCCP_SOCKOPT_TX_CCID = 14
 socket.DCCP_SOCKOPT_RX_CCID = 15
-
 
 client = socket.socket(socket.AF_INET, socket.SOCK_DCCP, socket.IPROTO_DCCP) 
 
@@ -27,9 +26,10 @@ client.connect(address)
 
 buff = '\0' * 1024
 
+print 'spamming server'
 while True:
 #  try:
-    time.sleep(.000001) #.000001 -> this value is too small
+    time.sleep(.1) #.000001 -> this value is too small
     client.send(buff)
 #  except socket.error: #if we are flooding it
 #    time.sleep(.1) 

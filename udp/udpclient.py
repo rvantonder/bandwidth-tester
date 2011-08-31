@@ -49,7 +49,8 @@ class UDP_Client:
           sys.exit(0)
          
     def spam(self):
-      buff = 65507 * '\0' #this is the maximum amount of data we can send. 65536 - 65507 = 29 bytes of 'header and other junk'. Almost certainly results in IP fragmentation
+      #buff = 65507 * '\0' #this is the maximum amount of data we can send. 65536 - 65507 = 29 bytes of 'header and other junk'. Almost certainly results in IP fragmentation
+      buff = 45000 * '\0'
       #buff = 576 * '\0' #minimum reassembly buffer size, guaranteed size any implementation must support
       #buff = 1024 * '\0'
       clientLogger.logger.info('Spamming the server now')
@@ -87,7 +88,8 @@ if __name__ == '__main__':
     amount.append(0)
 
     try:
-      c = UDP_Client(sys.argv[1]+'.narga.sun.ac.za', int(sys.argv[2]))
+      c = UDP_Client('146.232.49.41', int(sys.argv[2]))
+      #c = UDP_Client(sys.argv[1]+'.narga.sun.ac.za', int(sys.argv[2]))
       c.open_socket()
       t = threading.Thread(target = c.spam)
       t.setDaemon(False)

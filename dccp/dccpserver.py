@@ -1,5 +1,8 @@
 #!/usr/bin/python
 
+from numpy import *
+from pylab import *
+
 import socket
 import time
 import threading
@@ -12,7 +15,7 @@ socket.SOCK_DCCP = 6
 socket.IPROTO_DCCP = 33
 socket.SOL_DCCP = 269
 packet_size = 256 #hmmm?
-address = (socket.gethostname(),3001)
+address = ('localhost',3002)
 
 
 socket.DCCP_SOCKOPT_AVAILABLE_CCIDS = 12
@@ -94,10 +97,6 @@ class Client(threading.Thread): #client thread
             amount[0] = 0
             self.client.close()
             self.running = 0
-
-
-
-
 class BandwidthMonitor(threading.Thread):
   def __init__(self):
     self.start = 0
@@ -129,6 +128,31 @@ if __name__ == '__main__':
     print 'Starting Bandwidth monitor'
 
     b = BandwidthMonitor()    
+
+    x = arange(0,100,1)
+    y = []
+
+        
+    ion()
+
+    while len(y) < 100:
+      y.append(0)
+
+    line, = plot(x,y)
+    axis(array([0,100,0,125]))
+
+
+#    while 1:
+#      b.initiate()
+#      time.sleep(1)
+#      b.terminate()
+#      speed = b.get_bandwidth()/(1024*1024) 
+#      print str(speed) + ' MBytes/second'
+#      y.pop(0)
+#      y.append(speed)
+#      line.set_ydata(y)
+#      draw()
+
 
     while 1:
       b.initiate()

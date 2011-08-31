@@ -39,6 +39,7 @@ class TCP_Client:
           self.socket.send(message)
         except socket.error:
           clientLogger.logger.error('Send request failed')
+          return
           print "Error, send request failed"
          
     def spam(self):
@@ -49,7 +50,8 @@ class TCP_Client:
         try:
           self.send(buff)
         except socket.error:
-          print 'An error occurred'
+          print 'An error occurred!'
+          return 
 
 if __name__ == '__main__':
 
