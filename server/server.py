@@ -176,9 +176,10 @@ if __name__ == "__main__":
     y = []
 
     while len(y) < 100:
-      y.append(400)
+      y.append(0)
 
     line, = plot(x,y)
+    axis(array([0,100,0,125]))
 
     while 1:
       b.initiate()

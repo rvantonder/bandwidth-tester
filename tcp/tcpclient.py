@@ -46,7 +46,10 @@ class TCP_Client:
       clientLogger.logger.info('Spamming the server now')
       print "Spamming the server now"
       while 1:
-        self.send(buff)
+        try:
+          self.send(buff)
+        except socket.error:
+          print 'An error occurred'
 
 if __name__ == '__main__':
 

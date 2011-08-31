@@ -1,3 +1,4 @@
-2011-08-30 15:22:43,905 INFO MainThread Starting UDP client.
-2011-08-30 15:22:43,906 INFO MainThread Connection to server made
-2011-08-30 15:22:43,906 INFO MainThread Spamming the server now
+2011-08-31 14:31:19,452 INFO MainThread Starting TCP client
+2011-08-31 14:31:19,521 INFO MainThread Starting UDP client.
+2011-08-31 14:31:19,523 INFO MainThread Connection to server made
+2011-08-31 14:31:19,523 INFO MainThread Spamming the server now
