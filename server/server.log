@@ -1,9 +1,7 @@
-2011-08-30 09:25:54,745 INFO MainThread starting server
-2011-08-30 09:25:54,745 INFO Thread-1 Attempting to open socket
-2011-08-30 09:25:54,746 INFO Thread-1 Socket open
-2011-08-30 09:25:54,746 INFO Thread-1 Running
-2011-08-30 09:25:58,888 INFO Thread-1 Server shutdown requested.
-2011-08-30 09:25:58,888 INFO Thread-1 Close client sockets.
-2011-08-30 09:25:58,888 INFO Thread-1 Closing server socket
-2011-08-30 09:25:58,888 INFO Thread-1 Terminating client threads
-2011-08-30 09:25:58,888 INFO Thread-1 Client threads terminated
+2011-08-31 02:45:02,629 INFO MainThread starting server
+2011-08-31 02:45:02,630 INFO Thread-1 Attempting to open socket
+2011-08-31 02:45:02,630 INFO Thread-1 Socket open
+2011-08-31 02:45:02,630 INFO Thread-1 Running
+2011-08-31 02:45:11,211 INFO Thread-1 New connection incoming
+2011-08-31 02:49:10,533 INFO Thread-2 client disconnected
+2011-08-31 02:49:10,533 INFO Thread-2 Thread terminating

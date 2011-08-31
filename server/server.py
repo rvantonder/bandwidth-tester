@@ -4,6 +4,8 @@
 An echo server that uses threads to handle multiple clients at a time.
 Entering any line of input at the terminal will exit the server.
 """
+from pylab import *
+from numpy import *
 
 import select
 import socket
@@ -15,6 +17,7 @@ import pickle
 import time
 import datetime
 import signal
+
 
 def signal_handler(signal, frame):
   print 'You pressed stuff'
@@ -166,13 +169,33 @@ if __name__ == "__main__":
     t.start()
     print 'Starting Bandwidth monitor'
 
+    ion() #?
+
     b = BandwidthMonitor()    
-    
-    while monitor:
+    x = arange(0,100,1)
+    y = []
+
+    while len(y) < 100:
+      y.append(400)
+
+    line, = plot(x,y)
+
+    while 1:
       b.initiate()
       time.sleep(1)
       b.terminate()
-      print str(b.get_bandwidth()/(1024*1024)) + ' MBytes/second'
+      speed = b.get_bandwidth()/(1024*1024) 
+      print str(speed) + ' MBytes/second'
+      y.pop(0)
+      y.append(speed)
+      line.set_ydata(y)
+      draw()
+    
+#    while monitor:
+#      b.initiate()
+#      time.sleep(1)
+#      b.terminate()
+#      print str(b.get_bandwidth()/(1024*1024)) + ' MBytes/second'
       
   except IndexError:
     print 'Usage: python server.py <port number>'
