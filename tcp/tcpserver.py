@@ -184,12 +184,8 @@ if __name__ == "__main__":
       y.append(0)
     
     line, = plot(x,y)
-<<<<<<< HEAD
-    axis(array([0,100,0,125]))
 
-=======
     axis(array([0, 100, 0, 120]))
->>>>>>> 9c7e1f4bfc1d0152f11d6ae0783055119c1054f3
 
     while 1:
       b.initiate()

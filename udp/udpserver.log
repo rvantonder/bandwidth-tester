@@ -1,11 +1,4 @@
-<<<<<<< HEAD
-2011-08-31 14:06:53,611 INFO MainThread Starting server
-2011-08-31 14:06:53,612 INFO Thread-1 Attempting to open socket
-2011-08-31 14:06:53,612 INFO Thread-1 Socket open
-2011-08-31 14:06:53,612 INFO Thread-1 Running
-=======
-2011-08-31 15:42:58,778 INFO MainThread Starting server
-2011-08-31 15:42:58,778 INFO Thread-1 Attempting to open socket
-2011-08-31 15:42:58,779 INFO Thread-1 Socket open
-2011-08-31 15:42:58,841 INFO Thread-1 Running
->>>>>>> 9c7e1f4bfc1d0152f11d6ae0783055119c1054f3
+2011-09-01 16:30:15,479 INFO MainThread Starting server
+2011-09-01 16:30:15,480 INFO Thread-1 Attempting to open socket
+2011-09-01 16:30:15,480 INFO Thread-1 Socket open
+2011-09-01 16:30:15,540 INFO Thread-1 Running

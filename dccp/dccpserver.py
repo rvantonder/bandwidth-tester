@@ -27,7 +27,7 @@ socket.DCCP_SOCKOPT_RX_CCID = 15
 global amount
 
 class DCCPServer:
-  def __init__(self, junk): #TODO junk is just a port number but we are using 3001 from above
+  def __init__(self, port): #TODO junk is just a port number but we are using 3001 from above
     amount[0] = 0
 
     server = socket.socket(socket.AF_INET, socket.SOCK_DCCP, socket.IPROTO_DCCP)
@@ -36,8 +36,8 @@ class DCCPServer:
     server.setsockopt(socket.SOL_DCCP, socket.DCCP_SOCKOPT_SERVICE, True)
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) #TODO add this for tcp/udp as well
 
-    server.bind(address)
-    server.listen(5) #backlog = 1??
+    print server.bind((socket.gethostname(),port))
+    server.listen(1) #backlog = 1??
 
     self.server = server #TODO make it all self.server...
 
@@ -85,7 +85,6 @@ class Client(threading.Thread): #client thread
     self.running = 1 #running state variable
 
   def run(self):
-    self.client.send('a') #lol
     while self.running:
         try:
           data = self.client.recv(self.size)
@@ -98,6 +97,7 @@ class Client(threading.Thread): #client thread
             amount[0] = 0
             self.client.close()
             self.running = 0
+
 class BandwidthMonitor(threading.Thread):
   def __init__(self):
     self.start = 0
