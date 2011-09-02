@@ -39,7 +39,7 @@ buff = '\0' * 1024
 print 'spamming server'
 while True:
 #  try:
-    time.sleep(.00001) #.000001 -> this value is too small
+    time.sleep(.000005) #.000001 -> this value is too small
     client.send(buff)
 #  except socket.error: #if we are flooding it
 #    time.sleep(.1) 

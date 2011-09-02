@@ -15,7 +15,7 @@ socket.SOCK_DCCP = 6
 socket.IPROTO_DCCP = 33
 socket.SOL_DCCP = 269
 packet_size = 256 #hmmm?
-address = ('localhost',3000)
+address = ('0.0.0.0',3000)
 
 
 socket.DCCP_SOCKOPT_AVAILABLE_CCIDS = 12
@@ -36,7 +36,7 @@ class DCCPServer:
     server.setsockopt(socket.SOL_DCCP, socket.DCCP_SOCKOPT_SERVICE, True)
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) #TODO add this for tcp/udp as well
 
-    print server.bind((socket.gethostname(),port))
+    print server.bind(('0.0.0.0',port))
     server.listen(1) #backlog = 1??
 
     self.server = server #TODO make it all self.server...
@@ -143,23 +143,23 @@ if __name__ == '__main__':
     axis(array([0,100,0,125]))
 
 
-#    while 1:
-#      b.initiate()
-#      time.sleep(1)
-#      b.terminate()
-#      speed = b.get_bandwidth()/(1024*1024) 
-#      print str(speed) + ' MBytes/second'
-#      y.pop(0)
-#      y.append(speed)
-#      line.set_ydata(y)
-#      draw()
-
-
     while 1:
       b.initiate()
       time.sleep(1)
       b.terminate()
-      print str(b.get_bandwidth()/(1024*1024)) + ' MBytes/second'
+      speed = b.get_bandwidth()/(1024*1024) 
+      print str(speed) + ' MBytes/second'
+      y.pop(0)
+      y.append(speed)
+      line.set_ydata(y)
+      draw()
+
+
+#    while 1:
+#      b.initiate()
+#      time.sleep(1)
+#      b.terminate()
+#      print str(b.get_bandwidth()/(1024*1024)) + ' MBytes/second'
  
 
 #recommend packet size: 1400
