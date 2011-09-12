@@ -19,8 +19,6 @@ import datetime
 import signal
 
 
-
-
 def signal_handler(signal, frame):
   print 'You pressed stuff'
   sys.exit(0)
@@ -171,21 +169,23 @@ if __name__ == "__main__":
     t.start()
     print 'Starting Bandwidth monitor'
 
-    ion() #?
-
     b = BandwidthMonitor()    
     x = arange(0,100,1)
     y = []
-
-        
+   
     ion()
 
     while len(y) < 100:
       y.append(0)
-    
-    line, = plot(x,y)
 
-    axis(array([0, 100, 0, 120]))
+
+    line, = plot(x,y,'g')
+    axis(array([0, 100, 0, 130]))
+
+    xticks([]) # removes x axis tick marks
+    grid('on')
+    title('TCP')
+    ylabel('MB/s')
 
     while 1:
       b.initiate()

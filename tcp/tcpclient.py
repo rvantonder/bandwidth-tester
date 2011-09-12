@@ -38,7 +38,7 @@ class TCP_Client:
         try:
           self.socket.send(message)
         except socket.error:
-          clientLogger.logger.error('Send request failed')
+          #clientLogger.logger.error('Send request failed')
           return
           print "Error, send request failed"
          
@@ -60,7 +60,8 @@ if __name__ == '__main__':
     print "Starting TCP client"
 
     try:
-      c = TCP_Client(sys.argv[1]+'.narga.sun.ac.za', int(sys.argv[2]))
+      #c = TCP_Client(sys.argv[1]+'.narga.sun.ac.za', int(sys.argv[2]))
+      c = TCP_Client(sys.argv[1], int(sys.argv[2]))
       c.open_socket()
       c.spam()
     except IndexError:

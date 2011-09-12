@@ -17,7 +17,6 @@ socket.SOL_DCCP = 269
 packet_size = 256 #hmmm?
 address = ('0.0.0.0',3000)
 
-
 socket.DCCP_SOCKOPT_AVAILABLE_CCIDS = 12
 socket.DCCP_SOCKOPT_CCID = 13
 socket.DCCP_SOCKOPT_TX_CCID = 14
@@ -132,16 +131,20 @@ if __name__ == '__main__':
 
     x = arange(0,100,1)
     y = []
-
         
     ion()
 
     while len(y) < 100:
       y.append(0)
 
-    line, = plot(x,y)
-    axis(array([0,100,0,125]))
 
+    line, = plot(x,y,'b')
+    axis(array([0,100,0,130]))
+
+    xticks([]) #removes x axis tick marks
+    grid('on')
+    title('DCCP')
+    ylabel('MB/s')
 
     while 1:
       b.initiate()

@@ -15,7 +15,6 @@ packet_size = 256
 try:
   #address = (sys.argv[1]+'.narga.sun.ac.za',int(sys.argv[2]))
   address = (sys.argv[1],int(sys.argv[2]))
-  #address = ('146.232.49.32',int(sys.argv[2]))
   #address = ('localhost',int(sys.argv[2]))
 except:
   print '<ip> <port>'
@@ -30,19 +29,29 @@ client = socket.socket(socket.AF_INET, socket.SOCK_DCCP, socket.IPROTO_DCCP)
 
 client.setsockopt(socket.SOL_DCCP, socket.DCCP_SOCKOPT_PACKET_SIZE, packet_size)
 client.setsockopt(socket.SOL_DCCP, socket.DCCP_SOCKOPT_SERVICE, True)
+client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) #TODO only in server?
+
 print 'connecting...'
 client.connect(address) #XXX problem here?
 print 'connected...'
 
-buff = '\0' * 1024
+#buff = '\0' * 1024
+buff = 1400 * '\0'
 
 print 'spamming server'
 while True:
-#  try:
-    time.sleep(.000005) #.000001 -> this value is too small
+  try:
+    time.sleep(.009) #.000001 -> this value is too small .000005
     client.send(buff)
-#  except socket.error: #if we are flooding it
-#    time.sleep(.1) 
+
+    #num_bytes_sent = 0
+    #while (num_bytes_sent == 0):
+    #  num_bytes_sent = client.send(buff)
+
+  except: #if we are flooding it
+    #print num_bytes_sent
+    #print 'damn'
+    pass 
 
 
 #recommend packet size: 1400

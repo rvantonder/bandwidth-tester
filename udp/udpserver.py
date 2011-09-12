@@ -39,11 +39,10 @@ class ServerLogger:
 
 class Server:
   def __init__(self, port):
-    self.host = '0.0.0.0' #TODO bind on all possible IP addresses ?wtf?
+    self.host = '0.0.0.0'
     self.port = port 
     self.backlog = 5
     self.size = 70000 #max size apparenlty like 65520
-    #self.size = 1024
     self.socket = None
     self.threads = []
     amount[0] = 0
@@ -144,17 +143,22 @@ if __name__ == "__main__":
     t.start()
     print 'Starting Bandwidth monitor'
 
-    ion() #?
-
     b = BandwidthMonitor()    
     x = arange(0,100,1)
     y = []
 
+    ion()
+
     while len(y) < 100:
       y.append(0)
     
-    line, = plot(x,y)
-    axis(array([0, 100, 0, 120]))
+    line, = plot(x,y,'r')
+    axis(array([0, 100, 0, 130]))
+
+    xticks([]) #removes x axis tick marks
+    grid('on')
+    title('UDP')
+    ylabel('MB/s')
 
     while 1:
       b.initiate()
