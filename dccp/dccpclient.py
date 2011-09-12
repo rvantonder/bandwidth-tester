@@ -9,7 +9,8 @@ socket.DCCP_SOCKOPT_SERVICE = 2
 socket.SOCK_DCCP = 6
 socket.IPROTO_DCCP = 33
 socket.SOL_DCCP = 269
-packet_size = 256 
+#packet_size = 256 
+packet_size = 512
 
 
 try:
@@ -41,7 +42,7 @@ buff = 1400 * '\0'
 print 'spamming server'
 while True:
   try:
-    time.sleep(.009) #.000001 -> this value is too small .000005
+    time.sleep(.0025) #.000001 -> this value is too small .000005
     client.send(buff)
 
     #num_bytes_sent = 0
@@ -50,7 +51,7 @@ while True:
 
   except: #if we are flooding it
     #print num_bytes_sent
-    #print 'damn'
+    print 'damn'
     pass 
 
 

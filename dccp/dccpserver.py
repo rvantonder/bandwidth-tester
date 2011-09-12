@@ -14,7 +14,8 @@ socket.DCCP_SOCKOPT_SERVICE = 2
 socket.SOCK_DCCP = 6
 socket.IPROTO_DCCP = 33
 socket.SOL_DCCP = 269
-packet_size = 256 #hmmm?
+#packet_size = 256 #hmmm?
+packet_size = 512
 address = ('0.0.0.0',3000)
 
 socket.DCCP_SOCKOPT_AVAILABLE_CCIDS = 12
