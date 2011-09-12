@@ -1,0 +1,338 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{amstext}
+\usepackage{url}
+\usepackage[table]{xcolor}
+\usepackage[font=scriptsize, center]{caption}
+
+
+
+\title{Datagram Congestion Control}
+\author{R. van Tonder, 15676633 \\ Arne Esterhuizen, <no>} %todo
+\date{\today}
+
+\begin{document}
+\maketitle
+\newpage
+
+\section{Overview}
+\subsection{Description}
+Alternatives to the ubiquitous TCP and UDP protocols in networking 
+Problem description: does DCCP actually do anything...
+
+\subsection{Goal}
+\label{goals}
+The goal of this report is to investigate the operation of the DCCP protocol and the congestion control that is afforded
+by its use. For this reason, we evaluated DCCP's operational behavior when run concurrently with both the TCP and UDP protocols. 
+The three major areas of investigation are as follows:
+\begin{itemize}
+\item Contention of bandwidth between the TCP and DCCP protocols
+\item Whether UDP suppresses the complete bandwidth of TCP and DCCP
+\item Whether TCP or DCCP contends more effectively against UDP
+\end{itemize}
+In answering the above, the outcome of this investigation is to evaluate the effectiveness of DCCP as currently available through 
+certain Linux distributions. 
+
+
+\section{Implementation}
+The three protocols were implemented in Python. A server and client python program was written for each
+of respective protocols. Simulating transmission of data over the protocols therefore involved running a
+seperate process for each server on a node. Furthermore, single or multiple clients corresponding to these
+servers may be run on the same or different nodes.
+
+\subsection{Features Included}
+The clients can successfully connect to their respective servers, and send messages. These messages consisted of packets
+of pre-determined size so as to maximize bandwidth usage of the protocol or client. In the case of DCCP, multiple clients were required
+to make use of a greater amount of bandwidth, due to a variety of complications. See \S\ref{complications} for more. 
+
+\subsection{Features Not Included}
+The client implementations of the protocols do not allow multiple clients to be launched through one
+execution of the program. Thus, a user may have to run the program multiple times in terminal, or otherwise
+seek to make use of a bash script for doing so. This feature was not strictly required for the investigation, however.
+
+\subsection{Extra Features Included}
+The server programs provide a real-time graph of data received through its protocol. This feature was found \emph{not} to impact the
+data collection significantly. For instance, saving the data instead of plotting it in real time-yielded similar bandwidth read-outs
+from the servers, indicating that the act of plotting did not affected the bandwidth throughput. 
+
+The form of data collection measured the actual data sizes of the packets received by the servers. Consider that another metric 
+would be to count the number of packets received by the server, and consequently multiply it by the pre-determined packet sizes
+in order to determine bandwidth usage. This latter metric was found to be a bit wanting, as it does not exhibit cases where a number
+of packets may be received by the adaptor, but for various reason would not be passed up the protocol stack to the Python program. See
+\S\ref{complications} for more. 
+
+\subsection{Algorithms and Data Structures}
+To ensure thread-safe operations, the use of the Python GIL (Global Interpreter Lock) was employed. This granted us
+the ability to use thread-safe data structures containing the number of bytes received in a certain time period. 
+
+Real-time graphing was enabled by appending the most current bandwidth sampling in a time interval (typically 1 second)
+to a list of the 100 most recently sampled data points. The oldest data point in this list was consequently popped off.
+
+Critically, these operations takes place in a designated thread. A \texttt{BandwidthMonitor} class was created for the purpose
+of sampling the bandwidth usage in a time interval. The interval is determined by the time taken between calling the class's 
+\texttt{initiate} and \texttt{terminate} methods. A lock of the bandwidth count is obtained once during each call, and the
+bandwidth determined is returned by the \texttt{terminate} method.
+
+\section{Protocol Details}
+An outline of each of the protocols are given below, and the features provided by each. 
+
+\paragraph{TCP}
+TCP is a \emph{connection-oriented} protocol that ensures reliable delivery of data over a network through bit streams. Key features
+that TCP provides are ordered data transfer, retransmission of lost packets, error-checking, flow control, and congestion control. 
+These features allow TCP to be considered ``reliable''. 
+
+Most of the features mentioned make use of the fact that TCP implements a sliding
+window for sending and receiving data. Congestion control is afforded by four algorithms, namely, slow-start, congestion avoidance,
+fast retransmit, and fast recovery. 
+
+\paragraph{UDP}
+UDP is a \emph{connectionless-oriented} protocol that does not rely on handshaking like TCP. It is considered ``unreliable'' as it 
+does not guarantee devliery of UDP datagrams (or messages) that are sent to a host. Furthermore, UDP does not implement
+any error-checking algorithms.
+
+UDP is preferable to TCP in cases where waiting for packets is less desirable than dropping a few packets. UDP inherently provides
+shorter latencies, and thus has application in VoIP and online games. 
+
+\paragraph{DCCP}
+DCCP is a \emph{message-oriented} protocol, and provides a reliable connection between hosts. 
+The distinguishing feature of DCCP is that it it implements congestion control mechanisms at the transport layer,
+ rather than assuming such control at the application layer.
+
+This form of congestion control is considered TCP-friendly, meaning that it contends fairly in terms of bandwidth with programs making
+use of the TCP protocol. However, in an application like VoIP, it is desirable to send new data rather than resend old data. Timing
+constraints are placed on data in the DCCP protocol, allowing it to discard data that is considered ``too old'' to be considered
+useful. 
+
+DCCP makes use of congestion control algorithms which have a corresponding identifier. These CCID modules are implemented by
+the kernel of the operating system. 
+
+
+\section{Methodology and Results}
+The investigation was carried out by considering DCCP's interaction with TCP and UDP in turn, while keeping the goals mentioned in
+\S\ref{goals} in mind.
+%clients and servers terminated to determine...?
+
+\subsection{TCP and DCCP Contention}
+
+Consider the following graphs, which give a clear indication of bandwidth fluctuation when running TCP and DCCP 
+concurrently:
+
+
+\begin{figure}[!h]
+\begin{center}
+\hspace*{-65pt}
+\includegraphics[scale=.52]{screens/re/Screenshot-33.png}
+\end{center}
+\end{figure}
+
+First, a DCCP connection was made (corresponding to the blue line ont the graph). This connection consisted of three hosts running multiple
+DCCP clients each, with each DCCP client sending to a single host running the DCCP server. 
+%i dont really feel safe saying 3 x 100 clients... ek dink marcel het gese hulle het soos 25 nodig gehad
+%ek sal bietjie kyk of ek iets kan reg kry sodat mens minder as 100 nodig het...
+%sal hierdie probeer generic hou. 
+Please see \S\ref{complications} why multiple clients were required.
+
+After an initial 100 data points were sampled, a TCP client was launched from another
+host, along with a corresponding TCP server running on the same host as the DCCP server. The new TCP connection did not
+affect the DCCP connection in any noticeable way. This is likely due to the fact that the DCCP connections were
+not making use of the full bandwidth available. However, note that the TCP connection is running at a lower throughput
+than the approximate 117 MB/s of which it can utilize in the absence of DCCP.
+
+Next, a series of DCCP clients were terminated. The effect of this action on TCP was a sudden rise in throughput for TCP:
+
+\begin{figure}[!h]
+\begin{center}
+\includegraphics[scale=.4]{screens/re/Screenshot-12.png}
+\end{center}
+\end{figure}
+
+The DCCP clients were subsequently restarted, which again resulted in a reduced throughput of TCP, as indicated above.
+
+Say stuff about the new awesome info:
+
+DCCP was first started and consequently TCP (does not kill TCP like UDP)
+
+\begin{figure}[!h]
+\begin{center}
+\hspace*{-65pt}
+\includegraphics[scale=.52]{screens/re/Screenshot-3.png}
+\end{center}
+\end{figure}
+
+\begin{figure}[!h]
+\begin{center}
+\hspace*{-65pt}
+\includegraphics[scale=.52]{screens/re/Screenshot-1.png}
+\end{center}
+\end{figure}
+
+\begin{figure}[!h]
+\begin{center}
+\hspace*{-65pt}
+\includegraphics[scale=.52]{screens/re/Screenshot-2.png}
+\end{center}
+\end{figure}
+
+%we should really see what happens if DCCP consumes more than half the bandwidth - DCCP should throttle
+%itself appropriately. Otherwise, it is no different thatn UDP vs TCP, when its supposed to be TCP friendly.
+
+%again, we do not know if DCCP recovers from TCP after it is terminated
+%*IF* it is supressed when it needs more bandwidth, as hoped for above. we need to know if it recovers.
+
+The above results indicate that TCP does not suppress DCCP's bandwidth when it comes into effect. Instead, TCP operates
+at a lower potential throughput in DCCP's presence. However,
+in the event that DCCP uses more bandwidth than TCP, the congestion control mechanism throttles DCCP's
+bandwidth. This contrasts with UDP's behavior when running with TCP, as will be seenin \S\ref{contention}
+ [SPECULATIVE - I really want to be able to say this, though]. 
+
+Note also that the sum of the bandwidths used by TCCP and DCCP make use of the full spectrum of bandwidth available,
+but in a controlled manner.
+
+
+
+\subsection{DCCP and TCP Bandwidth Usage Versus UDP Bandwidth Usage}
+\label{contention}
+\subsubsection{DCCP and UDP}
+Consider the test set-up of DCCP as above, contending for bandwidth against the UDP
+protocol:
+
+\begin{figure}[!h]
+\begin{center}
+\includegraphics[scale=.4]{screens/re/Screenshot-44.png}
+\end{center}
+\end{figure}
+
+As indicated above, a UDP client was launched from a seperate host, with the
+UDP server running on the same host as the DCCP server. DCCP bandwidth
+is immediately suppressed down to a minute amount of about
+0.5 MB/s. 
+
+The following scenario depicts the behavior of UDP initially running in the absence of DCCP traffic.
+Note the stability of UDP bandwidth (i.e. no fluctuations), 
+prior to enabling DCCP traffic:
+
+\begin{figure}[!h]
+\begin{center}
+\includegraphics[scale=.4]{screens/re/Screenshot-46.png}
+\end{center}
+\end{figure}
+
+After initiating DCCP traffic, UDP traffic fluctuates greatly. However, it restricts DCCP
+traffic to a very small amount.
+
+Extending on this idea, consider the following graphs, which indicate the fluctuation
+of DCCP and UDP bandwidth upon successively adding DCCP clients. In particular, it is notable
+that DCCP does not gain any additional bandwidth by enabling more clients.
+\begin{figure}[!h]
+\begin{center}
+\includegraphics[scale=.4]{screens/re/Screenshot-48.png}
+\end{center}
+\end{figure}
+
+While dips in UDP traffic are evident, DCCP's bandwidth remains
+the same as the above scenario, at approximately 0.5 MB/s. However,UDP
+fluctuates much more in DCCP's presence as opposed to in its absence.
+
+Interestingly, it was discovered that in the event that the UDP
+traffic is terminated while DCCP transmission (however small) is active,
+DCCP will \emph{not} proceed to make use of the bandwidth that has
+become available:
+
+
+\begin{figure}[!h]
+\begin{center}
+\includegraphics[scale=.4]{screens/re/Screenshot-50.png}
+\end{center}
+\end{figure}
+
+It will be seen that this contrasts with TCP's behavior when
+UDP transmission is active. Thus, while DCCP has some effect
+on the stability of UDP, it cannot compete fairly for bandwidth.
+
+\subsubsection{TCP and UDP}
+The scenario above is repeated with TCP replacing DCCP.
+In the same vein, consider the bandwidth utilization of the TCP
+and UDP protocols in the graph below:
+
+\begin{figure}[!h]
+\begin{center}
+\includegraphics[scale=.4]{screens/re/Screenshot-4.png}
+\end{center}
+\end{figure}
+
+As indicated, TCP bandwidth takes a sharp dive as soon as
+the UDP client starts sending data. 
+
+In the following graphs, two notable points are raised. First,
+UDP bandwidth fluctuates greatly while the TCP protocol is active.
+Second, UDP bandwidth stabilizes as soon as the TCP bandwidth
+is eliminated:
+
+\begin{figure}[!h]
+\begin{center}
+\includegraphics[scale=.4]{screens/re/Screenshot-7.png}
+\end{center}
+\end{figure}
+
+However, unlike DCCP, TCP is able to make use of the available
+bandwidth when UDP is terminated:
+
+\begin{figure}[!h]
+\begin{center}
+\includegraphics[scale=.4]{screens/re/Screenshot-15.png}
+\end{center}
+\end{figure}
+
+The interpretation of the results above are as follows...
+This recovery made by TCP is interesting; it suggest... %what? DCCP
+%se throttling is done is such a way that...??
+
+It can thus be concluded that...
+
+udp does not completely suppress tcp/dccp, but does 
+enough to render it useless.
+%now answer whether tcp/dccp contends better with udp and why.
+Neither contends better, but TCP recovers better. Why??
+\section{Extra Tests} %i want a three way battle, all-in-one screen. hahah.
+
+\section{Problems and Interesting Findings}
+
+\subsection{Establishing a DCCP connection}
+One of the problems we experienced was DCCP's inability to establish a connection
+without user intervention. In order to establish a DCCP connection from a client to
+a server on different computers, it was first necessary to attempt a connection both ways. 
+That is, one would need to initialise clients on both computers, each attempting to connect
+to the other. This connection need not succeed--and cannot with only clients on either end--but 
+is necessary to ``prepare'' the connection. These clients, their role being fulfilled, are
+discarded. Only now can a client-server connection from one computer to the next succeed. 
+We were unable to establish a DCCP connection without first following through with these steps of 
+manually connecting from both ends.
+
+\subsection{Error 11}
+There were some initial difficulties in sending data over a DCCP connection. We initially
+simply sent our data using socket.send on the client side, believing that as with TCP
+and UDP, this would be sufficient. This would result in socket error 11,``resource currently
+unavailable'' being thrown, meaning that if congestion is high, the congestion control 
+protocol can decide not to send the data. We then placed the send statement within a try-except
+block and added a sleep statement. The sleep statement would pace the client and prevent
+congestion, while the try-except block would ensure that the client
+continued attempting to send data after the resource unavailable exception occurred. All that
+remained was to fine tune the amount of time that the client would sleep. Smaller times resulted
+in higher throughput and larger times resulted in lower throughput. It was hoped that there would be
+an ideal duration of time that would prevent the congestion control protocol from blocking the client,
+but ultimately the sleep interval was kept small to keep throughput high.
+
+\section{Conclusion}
+
+
+
+\newpage
+\appendix
+\section{Appendix}
+\label{appa}
+
+
+\end{document}
