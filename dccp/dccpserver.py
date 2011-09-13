@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+'''A DCCP server for receiving data from client.'''
+
 from numpy import *
 from pylab import *
 
@@ -14,45 +16,41 @@ socket.DCCP_SOCKOPT_SERVICE = 2
 socket.SOCK_DCCP = 6
 socket.IPROTO_DCCP = 33
 socket.SOL_DCCP = 269
-#packet_size = 256 #hmmm?
 packet_size = 512
-address = ('0.0.0.0',3000)
 
 socket.DCCP_SOCKOPT_AVAILABLE_CCIDS = 12
 socket.DCCP_SOCKOPT_CCID = 13
 socket.DCCP_SOCKOPT_TX_CCID = 14
 socket.DCCP_SOCKOPT_RX_CCID = 15
 
-
 global amount
 
 class DCCPServer:
-  def __init__(self, port): #TODO junk is just a port number but we are using 3001 from above
+  def __init__(self, port):
     amount[0] = 0
 
-    server = socket.socket(socket.AF_INET, socket.SOCK_DCCP, socket.IPROTO_DCCP)
+    self.server = socket.socket(socket.AF_INET, socket.SOCK_DCCP, socket.IPROTO_DCCP)
 
-    server.setsockopt(socket.SOL_DCCP, socket.DCCP_SOCKOPT_PACKET_SIZE, packet_size)
-    server.setsockopt(socket.SOL_DCCP, socket.DCCP_SOCKOPT_SERVICE, True)
-    server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) #TODO add this for tcp/udp as well
+    self.server.setsockopt(socket.SOL_DCCP, socket.DCCP_SOCKOPT_PACKET_SIZE, packet_size)
+    self.server.setsockopt(socket.SOL_DCCP, socket.DCCP_SOCKOPT_SERVICE, True)
+    self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-    server.bind(('0.0.0.0',port))
-    server.listen(1) #backlog = 1??
-
-    self.server = server #TODO make it all self.server...
+    self.server.bind(('0.0.0.0', port))
+    self.server.listen(1)
 
     self.threads = []
 
   def run(self):
-    input = [self.server,sys.stdin]
+    input = [self.server, sys.stdin]
     running = 1
 
     while running:
-        inputready,outputready,exceptready = select.select(input,[],[])
+        inputready, outputready, exceptready = select.select(input, [], [])
 
         for s in inputready:
 
             if s == self.server:
+                # create new thread for incoming connection
                 c = Client(self.server.accept())
                 c.setDaemon(True)
                 c.start()
@@ -73,11 +71,9 @@ class DCCPServer:
     for c in self.threads:
         c.running = 0
         c.join()
-        
-
 
 class Client(threading.Thread): #client thread
-  def __init__(self,(client,address)):
+  def __init__(self,(client, address)):
     threading.Thread.__init__(self) 
     self.client = client #the socket
     self.address = address #the address
@@ -89,7 +85,7 @@ class Client(threading.Thread): #client thread
         try:
           data = self.client.recv(self.size)
         except socket.error:
-          print 'fuckup'
+          print 'receive error'
 
         if data:
           amount[0] += len(data)
@@ -120,12 +116,17 @@ if __name__ == '__main__':
     amount = []
     amount.append(0)
 
-    s = DCCPServer(int(sys.argv[1]))
+    try:
+      port = sys.argv[1]  
+    except:
+      print '<port>'
+      sys.exit(0)
+
+    s = DCCPServer(int(port))
     t = threading.Thread(target = s.run)
     t.setDaemon(False)
     t.start()
  
-
     print 'Starting Bandwidth monitor'
 
     b = BandwidthMonitor()    
@@ -133,16 +134,15 @@ if __name__ == '__main__':
     x = arange(0,100,1)
     y = []
         
-    ion()
+    ion() #animated graphs
 
     while len(y) < 100:
       y.append(0)
 
-
     line, = plot(x,y,'b')
-    axis(array([0,100,0,130]))
+    axis(array([0,100,0,140]))
 
-    xticks([]) #removes x axis tick marks
+    xticks([])
     grid('on')
     title('DCCP')
     ylabel('MB/s')
@@ -151,21 +151,9 @@ if __name__ == '__main__':
       b.initiate()
       time.sleep(1)
       b.terminate()
-      speed = b.get_bandwidth()/(1024*1024) 
+      speed = b.get_bandwidth()/(1000*1000) 
       print str(speed) + ' MBytes/second'
       y.pop(0)
       y.append(speed)
       line.set_ydata(y)
       draw()
-
-
-#    while 1:
-#      b.initiate()
-#      time.sleep(1)
-#      b.terminate()
-#      print str(b.get_bandwidth()/(1024*1024)) + ' MBytes/second'
- 
-
-#recommend packet size: 1400
-#ip header, 20 bytes, dccp, 32 bytes
-#maximum transmission unit 1500 (UDP is like, what, something huge)

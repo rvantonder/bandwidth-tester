@@ -1,39 +1,29 @@
 #!/usr/bin/env python
 
-"""
-An echo client that allows the user to send multiple lines to the server.
-Entering a blank line will exit the client.
-"""
+'''A TCP client for data transmission to server.'''
 
 import socket
 import sys
 import select
-from logger import Logger
 
 class TCP_Client:
-
     def __init__(self, ip, port):
         self.host = ip
         self.port = port 
         self.size = 1024
         self.socket = None
         self.username = ''
-        clientLogger = Logger('udpclient.log')
-        clientLogger.logger.info('Starting UDP client.');
 
     def open_socket(self):
         try:
           self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
           self.socket.connect((self.host, self.port))
-          clientLogger.logger.info('Connection to server made')
         except socket.error:
-          clientLogger.logger.error('Server refused connection.')
           print "Error, server refused connection"
           sys.exit(1)
 
     def close_socket(self):
         self.socket.close()
-        clientLogger.logger.info('Connection closed.')
 
     def send(self, message):
         try:
@@ -44,8 +34,7 @@ class TCP_Client:
          
     def spam(self):
       buff = 1024 * '\0'
-      clientLogger.logger.info('Spamming the server now')
-      print "Spamming the server now"
+      print "spamming server"
       while 1:
         try:
           self.send(buff)
@@ -55,14 +44,15 @@ class TCP_Client:
 
 if __name__ == '__main__':
 
-    clientLogger = Logger('tcpclient.log')
-    clientLogger.logger.info('Starting TCP client')
+    try:
+        ip = sys.argv[1]
+        host = sys.argv[2]
+    except IndexError:
+        print '<ip> <port>'
+        sys.exit(0)
+
     print "Starting TCP client"
 
-    try:
-      #c = TCP_Client(sys.argv[1]+'.narga.sun.ac.za', int(sys.argv[2]))
-      c = TCP_Client(sys.argv[1], int(sys.argv[2]))
-      c.open_socket()
-      c.spam()
-    except IndexError:
-      print 'Enter name and port' 
+    c = TCP_Client(ip, int(host))
+    c.open_socket()
+    c.spam() 
