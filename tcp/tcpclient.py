@@ -29,6 +29,7 @@ class TCP_Client:
         except socket.error:
           clientLogger.logger.error('Server refused connection.')
           print "Error, server refused connection"
+          sys.exit(1)
 
     def close_socket(self):
         self.socket.close()
@@ -38,9 +39,8 @@ class TCP_Client:
         try:
           self.socket.send(message)
         except socket.error:
-          #clientLogger.logger.error('Send request failed')
-          return
           print "Error, send request failed"
+          sys.exit(1)
          
     def spam(self):
       buff = 1024 * '\0'

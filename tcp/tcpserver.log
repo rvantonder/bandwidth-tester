@@ -1,4 +1,5 @@
-2011-08-31 02:30:17,431 INFO MainThread starting server
-2011-08-31 02:30:17,544 INFO Thread-1 Attempting to open socket
-2011-08-31 02:30:17,544 INFO Thread-1 Socket open
-2011-08-31 02:30:17,544 INFO Thread-1 Running
+2011-09-13 08:11:20,995 INFO MainThread starting server
+2011-09-13 08:11:20,995 INFO Thread-1 Attempting to open socket
+2011-09-13 08:11:21,056 INFO Thread-1 Socket open
+2011-09-13 08:11:21,056 INFO Thread-1 Running
+2011-09-13 08:11:22,884 INFO Thread-1 New connection incoming

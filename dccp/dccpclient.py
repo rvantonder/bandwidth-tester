@@ -41,7 +41,7 @@ buff = 1400 * '\0'
 
 print 'spamming server'
 while True:
-  try:
+   try:
     time.sleep(.0025) #.000001 -> this value is too small .000005
     client.send(buff)
 
@@ -49,10 +49,11 @@ while True:
     #while (num_bytes_sent == 0):
     #  num_bytes_sent = client.send(buff)
 
-  except: #if we are flooding it
+   except socket.error as (errno, strerror): #if we are flooding it
+    print errno
     #print num_bytes_sent
-    print 'damn'
-    pass 
+    #print 'damn'
+    #pass 
 
 
 #recommend packet size: 1400
