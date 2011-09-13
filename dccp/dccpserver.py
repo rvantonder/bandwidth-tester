@@ -36,7 +36,7 @@ class DCCPServer:
     server.setsockopt(socket.SOL_DCCP, socket.DCCP_SOCKOPT_SERVICE, True)
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) #TODO add this for tcp/udp as well
 
-    print server.bind(('0.0.0.0',port))
+    server.bind(('0.0.0.0',port))
     server.listen(1) #backlog = 1??
 
     self.server = server #TODO make it all self.server...

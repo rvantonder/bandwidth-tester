@@ -50,7 +50,9 @@ while True:
     #  num_bytes_sent = client.send(buff)
 
    except socket.error as (errno, strerror): #if we are flooding it
-    print errno
+    if errno == 32 or errno == 104:
+      print 'Connection lost, fatal'
+      sys.exit(1)
     #print num_bytes_sent
     #print 'damn'
     #pass 
