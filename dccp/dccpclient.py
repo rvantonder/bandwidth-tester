@@ -38,6 +38,7 @@ except socket.error as (errno, strerror):
   #for connecting dccp clients en masse, ignore error 87 'too many users'
   if not(errno == 87):
     print 'Error, server refused connection'
+    sys.exit(1)
  
 print 'connected...'
 

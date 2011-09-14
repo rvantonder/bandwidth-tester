@@ -130,7 +130,6 @@ if __name__ == "__main__":
     sys.exit(0)
 
   s = Server(int(port))
-  print 'Hit any key to terminate server'
   t = threading.Thread(target = s.run)
   t.setDaemon(False)
   t.start()

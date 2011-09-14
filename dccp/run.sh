@@ -9,3 +9,5 @@ fi
 for i in $(seq "$3"); do
   python dccpclient.py "$1" "$2" &
 done
+
+
