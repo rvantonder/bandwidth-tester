@@ -1,0 +1,39 @@
+\contentsline {section}{\numberline {1}Overview}{3}
+\contentsline {subsection}{\numberline {1.1}Description}{3}
+\contentsline {paragraph}{}{3}
+\contentsline {subsection}{\numberline {1.2}Goal}{3}
+\contentsline {section}{\numberline {2}Implementation}{3}
+\contentsline {subsection}{\numberline {2.1}Features Included}{3}
+\contentsline {subsection}{\numberline {2.2}Features Not Included}{4}
+\contentsline {subsection}{\numberline {2.3}Extra Features Included}{4}
+\contentsline {paragraph}{}{4}
+\contentsline {subsection}{\numberline {2.4}Algorithms and Data Structures}{4}
+\contentsline {section}{\numberline {3}Protocol Details}{4}
+\contentsline {subsection}{\numberline {3.1}TCP}{4}
+\contentsline {subsection}{\numberline {3.2}UDP}{5}
+\contentsline {subsection}{\numberline {3.3}DCCP}{5}
+\contentsline {section}{\numberline {4}Methodology and Experiments}{5}
+\contentsline {subsection}{\numberline {4.1}TCP and DCCP Contention}{5}
+\contentsline {paragraph}{}{6}
+\contentsline {subsection}{\numberline {4.2}DCCP, TCP, and UDP Bandwidth Usage}{8}
+\contentsline {subsubsection}{\numberline {4.2.1}DCCP and UDP}{8}
+\contentsline {paragraph}{}{8}
+\contentsline {subsubsection}{\numberline {4.2.2}TCP and UDP}{10}
+\contentsline {paragraph}{}{10}
+\contentsline {section}{\numberline {5}Extra Tests and Considerations}{11}
+\contentsline {section}{\numberline {6}Results}{12}
+\contentsline {paragraph}{}{13}
+\contentsline {paragraph}{}{13}
+\contentsline {paragraph}{}{13}
+\contentsline {paragraph}{}{13}
+\contentsline {section}{\numberline {7}Problems and Interesting Findings}{13}
+\contentsline {subsection}{\numberline {7.1}Establishing a DCCP connection}{13}
+\contentsline {paragraph}{}{13}
+\contentsline {subsection}{\numberline {7.2}Error 11}{13}
+\contentsline {paragraph}{}{14}
+\contentsline {paragraph}{}{14}
+\contentsline {subsection}{\numberline {7.3}Anomalies}{14}
+\contentsline {section}{\numberline {8}Conclusion}{14}
+\contentsline {paragraph}{}{14}
+\contentsline {paragraph}{}{14}
+\contentsline {paragraph}{}{14}
