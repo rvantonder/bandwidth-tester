@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 
-"""
-An echo server that uses threads to handle multiple clients at a time.
-Entering any line of input at the terminal will exit the server.
-"""
+'''A UDP server for receiving data from client.'''
 
 from pylab import *
 from numpy import *
@@ -12,103 +9,77 @@ import select
 import socket
 import sys
 import threading
-import logging
+#import logging
 import os
 import pickle
 import time
-import datetime
-import signal
+#import datetime
+#import signal
 
-def signal_handler(signal, frame):
-  print 'You pressed stuff'
-  sys.exit(0)
+#def signal_handler(signal, frame):
+#  print 'You pressed stuff'
+#  sys.exit(0)
 
 global amount
-
-class ServerLogger:
-  def __init__(self, logfilename):
-    if os.path.isfile(logfilename):
-      os.remove(logfilename)
-
-    self.logger = logging.getLogger("serverlogger")
-    self.hdlr = logging.FileHandler(logfilename)
-    self.formatter = logging.Formatter('%(asctime)s %(levelname)s %(threadName)s %(message)s')
-    self.hdlr.setFormatter(self.formatter)
-    self.logger.addHandler(self.hdlr)
-    self.logger.setLevel(logging.INFO)
 
 class Server:
   def __init__(self, port):
     self.host = '0.0.0.0'
     self.port = port 
     self.backlog = 5
-    self.size = 70000 #max size apparenlty like 65520
+    self.size = 70000 #max size apparently 65520
     self.socket = None
     self.threads = []
     amount[0] = 0
 
   def open_socket(self):
-    serverLogger.logger.info("Attempting to open socket")
     try:
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         a = self.socket.bind((self.host, self.port))
-        #b = self.socket.listen(self.backlog)
     except socket.error, (value, message):
         if self.socket:
             self.socket.close()
-        serverLogger.logger.warn("Could not open socket" + message)
         print "Could not open socket: " + message
         sys.exit(1)
-    serverLogger.logger.info("Socket open")
 
   def run(self):
     self.open_socket()
     running = 1
 
-    serverLogger.logger.info("Running")
     while running:
         try:
           data = self.socket.recv(self.size)
         except socket.error:
-          serverLogger.logger.warn("Socket closed on receive")
+          #Socket closed on receive
+          pass
 
         if data:
           amount[0] += len(data)
         else:
             amount[0] = 0
-            #self.client.close()
-            serverLogger.logger.info('Client disconnected')
             running = 0
 
     print 'Received signal to stop'
 
-    serverLogger.logger.info('Server shutdown requested.')
-    serverLogger.logger.info('Close client sockets.')
-  
-    serverLogger.logger.info('Closing server socket')
     self.socket.close()
 
-    serverLogger.logger.info('Terminating client threads')
     for c in self.threads:
         c.running = 0
         c.join()
         
-    serverLogger.logger.info('Client threads terminated')
-
   def receive(self):
     running = 1
     while running:
         try:
           data, address = self.socket.recvfrom(self.size)
         except socket.error:
-          serverLogger.logger.warn("Socket closed on receive")
+          #Socket closed on receive
+          pass
 
         if data:
           amount[0] += len(data)
         else:
             amount[0] = 0
-            #self.client.close()
-            serverLogger.logger.info('Client disconnected')
             running = 0
 
 class BandwidthMonitor(threading.Thread):
@@ -129,53 +100,47 @@ class BandwidthMonitor(threading.Thread):
     return self.amount_now/(self.end-self.start)
 
 if __name__ == "__main__":
+
   try:
-
-    amount = []
-    amount.append(0)
+    port = sys.argv[1]  
+  except:
+    print '<port>'
+    sys.exit(0)
+  
+  amount = []
+  amount.append(0)
     
-    serverLogger = ServerLogger('udpserver.log') 
-    serverLogger.logger.info("Starting server")
-    s = Server(int(sys.argv[1]))
-    print 'Hit any key to terminate server'
-    t = threading.Thread(target = s.run)
-    t.setDaemon(False)
-    t.start()
-    print 'Starting Bandwidth monitor'
+  s = Server(int(port))
+  print 'Hit any key to terminate server'
+  t = threading.Thread(target = s.run)
+  t.setDaemon(False)
+  t.start()
+  print 'Starting Bandwidth monitor'
 
-    b = BandwidthMonitor()    
-    x = arange(0,100,1)
-    y = []
+  b = BandwidthMonitor()    
+  x = arange(0,100,1)
+  y = []
 
-    ion()
+  ion()#animated graphing
 
-    while len(y) < 100:
-      y.append(0)
-    
-    line, = plot(x,y,'r')
-    axis(array([0, 100, 0, 130]))
+  while len(y) < 100:
+    y.append(0)
+  
+  line, = plot(x,y,'r')
+  axis(array([0, 100, 0, 140]))
 
-    xticks([]) #removes x axis tick marks
-    grid('on')
-    title('UDP')
-    ylabel('MB/s')
+  xticks([]) #removes x axis tick marks
+  grid('on')
+  title('UDP')
+  ylabel('MB/s')
 
-    while 1:
-      b.initiate()
-      time.sleep(1)
-      b.terminate()
-      speed = b.get_bandwidth()/(1024*1024) 
-      print str(speed) + ' MBytes/second'
-      y.pop(0)
-      y.append(speed)
-      line.set_ydata(y)
-      draw()
-      
-  except IndexError:
-    print 'Usage: python server.py <port number>'
-
-
-#time.sleep(1), sleep for 1 second
-
-#s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-#s.bind...
+  while 1:
+    b.initiate()
+    time.sleep(1)
+    b.terminate()
+    speed = b.get_bandwidth()/(1000*1000) 
+    print str(speed) + ' MBytes/second'
+    y.pop(0)
+    y.append(speed)
+    line.set_ydata(y)
+    draw()

@@ -1,7 +1,13 @@
 #!/bin/bash
 
-A="1 2 3 4 5 6 7 8 "
+if [ ! -n "$3" ]
+then
+  echo "Usage: ./`basename $0` <ip> <port> <num_clients>"
+  exit
+fi  
 
-for i in $(seq 100); do
- python dccpclient.py 146.232.50.225 3000 & #los die ampersand in!
+for i in $(seq "$3"); do
+  python dccpclient.py "$1" "$2" &
 done
+
+
