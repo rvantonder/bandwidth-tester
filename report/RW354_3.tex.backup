@@ -20,8 +20,16 @@
 
 \section{Overview}
 \subsection{Description}
-Alternatives to the ubiquitous TCP and UDP protocols in networking 
-Problem description: does DCCP actually do anything...
+DCCP is an emerging protocol that aims to provide improved congestion control
+alongside the TCP protocol. While its development has gone through many
+phases, it is still not yet deemed ready for industry adoption. 
+\paragraph{}
+In this report we will investigate the characteristics of DCCP and evaluate its
+effectiveness in comparison to the TCP and UDP protocols. It must be noted that
+this may not accurately reflect the final, intended operation of the DCCP
+protocol. This report derives value from the fact that the protocol was tested
+on Linux (Ubuntu) machines whose kernel support the DCCP protocol in
+its current state.
 
 \subsection{Goal}
 \label{goals}
@@ -34,7 +42,7 @@ The three major areas of investigation are as follows:
 \item Whether TCP or DCCP contends more effectively against UDP
 \end{itemize}
 In answering the above, the outcome of this investigation is to evaluate the effectiveness of DCCP as currently available through 
-certain Linux distributions. 
+selected Ubuntu distributions. 
 
 
 \section{Implementation}
@@ -57,7 +65,7 @@ seek to make use of a bash script for doing so. This feature was not strictly re
 The server programs provide a real-time graph of data received through its protocol. This feature was found \emph{not} to impact the
 data collection significantly. For instance, saving the data instead of plotting it in real time-yielded similar bandwidth read-outs
 from the servers, indicating that the act of plotting did not affected the bandwidth throughput. 
-
+\paragraph{}
 The form of data collection measured the actual data sizes of the packets received by the servers. Consider that another metric 
 would be to count the number of packets received by the server, and consequently multiply it by the pre-determined packet sizes
 in order to determine bandwidth usage. This latter metric was found to be a bit wanting, as it does not exhibit cases where a number
@@ -111,7 +119,8 @@ the kernel of the operating system.
 
 
 \section{Methodology and Experiments}
-The investigation was carried out by considering DCCP's interaction with TCP and UDP in turn, while keeping the goals mentioned in
+The investigation was carried out by considering DCCP's interaction with TCP and
+UDP in turn, while keeping the goals mentioned of
 \S\ref{goals} in mind.
 %clients and servers terminated to determine...?
 
@@ -121,6 +130,8 @@ The investigation was carried out by considering DCCP's interaction with TCP and
 Consider the following graphs, which give a clear indication of bandwidth fluctuation when running TCP and DCCP 
 concurrently:
 
+\newpage
+
 \begin{figure}[!h]
 \begin{center}
 \hspace*{-65pt}
@@ -128,17 +139,17 @@ concurrently:
 \end{center}
 \end{figure}
 
-First, a DCCP connection was made (corresponding to the blue line ont the graph). This connection consisted of three hosts running multiple
-DCCP clients each, with each DCCP client sending to a single host running the DCCP server. 
-
-Please see \S\ref{complications} why multiple clients were required.
+First, a DCCP connection was made (corresponding to the blue line in the graph).
+This connection consisted of three hosts running multiple
+DCCP clients each, with each DCCP client sending to a single host running the
+DCCP server.
 
 After an initial 100 data points were sampled, a TCP client was launched from another
 host, along with a corresponding TCP server running on the same host as the DCCP server. The new TCP connection did not
 affect the DCCP connection in any noticeable way. This is likely due to the fact that the DCCP connections were
 not making use of the full bandwidth available. However, note that the TCP connection is running at a lower throughput
 than the approximate 117 MB/s of which it can utilize in the absence of DCCP.
-
+\paragraph{}
 Next, a series of DCCP clients were terminated. The effect of this action on TCP was a sudden rise in throughput for TCP:
 
 \begin{figure}[!h]
@@ -150,7 +161,8 @@ Next, a series of DCCP clients were terminated. The effect of this action on TCP
 
 The DCCP clients were subsequently restarted, which again resulted in a reduced throughput of TCP, as indicated above.
 
-Next, the behaviour of TCP and DCCP is analyzed when the initial DCCP bandwidth
+Following this, the behaviour of TCP and DCCP is analyzed when the initial DCCP
+bandwidth
 is \emph{higher} than that of TCP. Two DCCP client batches were required to
 achieve this simulation. The throughput of the protocols are displayed below:
 
@@ -179,15 +191,15 @@ batch yielded the following graphs:
 It is evident that DCCP's congestion control is in effect, as it allows TCP to
 make use of a significant amount of bandwidth, and does not suppress it
 outright. This contrasts greatly with UDP's effect as will be seen in
-\ref{contention}.
+\S\ref{contention}.
 
 
 Note also that the sum of the bandwidths used by TCCP and DCCP make use of the full spectrum of bandwidth available,
 but in a controlled manner. The bandwidth spikes are considered ``anomalies'',
-and are discussed in greater detail in \ref{complications}.
+and are discussed in greater detail in \S\ref{anom}.
 
 
-\subsection{DCCP and TCP Bandwidth Usage Versus UDP Bandwidth Usage}
+\subsection{DCCP, TCP, and UDP Bandwidth Usage}
 \label{contention}
 \subsubsection{DCCP and UDP}
 Consider the test set-up of DCCP as above, contending for bandwidth against the UDP
@@ -204,23 +216,25 @@ As indicated above, a UDP client was launched from a separate host, with the
 UDP server running on the same host as the DCCP server. DCCP bandwidth
 is immediately suppressed down to a minute amount of about
 0.5 MB/s. 
-
+\paragraph{}
 The following scenario depicts the behavior of UDP initially running in the absence of DCCP traffic.
 Note the stability of UDP bandwidth (i.e. no fluctuations), 
-prior to enabling DCCP traffic:
+prior to enabling DCCP traffic.
 
 \begin{figure}[!h]
 \begin{center}
 \hspace*{-65pt}
-\includegraphics[scale=.52]{screens/re/Screenshot-46.png}
+\includegraphics[scale=.50]{screens/re/Screenshot-46.png}
 \end{center}
 \end{figure}
 
 After initiating DCCP traffic, UDP traffic fluctuates greatly. However, it restricts DCCP
 traffic to a very small amount.
 
-Extending on this idea, consider the following graphs, which indicate the fluctuation
-of DCCP and UDP bandwidth upon successively adding DCCP clients. In particular, it is notable
+Extending this idea, consider the following graphs, which indicate the
+fluctuation
+of DCCP and UDP bandwidth upon successive addition of DCCP clients. In
+particular, it is notable
 that DCCP does not gain any additional bandwidth by enabling more clients.
 \begin{figure}[!h]
 \begin{center}
@@ -264,7 +278,7 @@ and UDP protocols in the graph below:
 
 As indicated, TCP bandwidth takes a sharp dive as soon as
 the UDP client starts sending data. 
-
+\paragraph{}
 In the following graphs, two notable points are raised. First,
 UDP bandwidth fluctuates greatly while the TCP protocol is active.
 Second, UDP bandwidth stabilizes as soon as the TCP bandwidth
@@ -292,7 +306,7 @@ bandwidth when UDP is terminated:
 This report would not be complete without an evaluation of all three protocols
 running concurrently. However, it was necessary to establish each pairing
 separately, so that  the behaviour from all
-three protocols can be analyzed with these results in mind. Consider the
+three protocols can be analyzed with these results in perspective. Consider the
 following three graphs which summarize the following sequence of events:
 
 \begin{enumerate}
@@ -326,27 +340,27 @@ available bandwidth, while DCCP is not.
 
 Having considered all of the above cases, the results can now be delivered
 conclusively.
-
-Firstly, in \ref{tcpdccp} it was confirmed that DCCP tolerates TCP traffic to a
+\paragraph{}
+Firstly, in \S\ref{tcpdccp} it was confirmed that DCCP tolerates TCP traffic to
+a
 much better extent than UDP. If TCP initially has a greater amount of incoming
 traffic, DCCP throttles itself accordingly. If DCCP initially has a greater
 amount of incoming traffic, TCP is still able to operate at a reasonable level.
-
-Secondly, in \ref{contention}, it was established that UDP indeed suppresses
+\paragraph{}
+Secondly, in \S\ref{contention}, it was established that UDP indeed suppresses
 TCP and DCCP traffic. However, it does not completely and utterly do so, as
 TCP and DCCP can operate at a very ineffective level of about 0.5 MB/s. 
-
+\paragraph{}
 Finally, it was interesting to note that while neither TCP or DCCP can hinder a
 large amount of incoming UDP traffic, only TCP can ``recover'' \emph{after} the
 UDP traffic stops. DCCP traffic, on the other hand, remains at the very low
 rate that UDP suppressed it to.
-
+\paragraph{}
 The reason behind this latter point is not absolutely clear. One speculated
-reason is that the congestion control behind DCCP throttles DCCP traffic only
-in relation to TCP traffic, and not UDP. Thus, where DCCP can effectively
-maintain a reasonable bandwidth while only TCP is running, it has no safeguards
-once there is UDP traffic incoming. Once this UDP traffic is eliminated, DCCP
-does not detect that it has stopped, and maintains a low throughput.
+reason is that this is not the final intended mode of operation for DCCP, and that it 
+\emph{should} be able to recover lost bandwidth when it becomes available. Since it is
+still in development, the congestion control algorithm may not yet take such a 
+situation into account. 
 
 \section{Problems and Interesting Findings}
 \label{complications}
@@ -391,6 +405,12 @@ sleep for. Smaller times resulted
 in higher throughput and larger times resulted in lower throughput. It was hoped that there would be
 an ideal duration of time that would prevent the congestion control protocol from blocking the client,
 but ultimately the sleep interval was kept small to keep throughput high.
+
+\subsection{Anomalies}
+\label{anom}
+Bandwidth spikes were observed for all three protocols. These tended to occur when other protocol
+clients were started or terminated in a concurrent set-up. This could be considered a ``burst'' 
+in throughput as bandwidth becomes available, after which the clients stabilize. 
 
 \section{Conclusion}
 

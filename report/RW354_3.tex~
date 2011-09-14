@@ -17,6 +17,8 @@
 \begin{document}
 \maketitle
 \newpage
+\tableofcontents
+\newpage
 
 \section{Overview}
 \subsection{Description}
@@ -47,7 +49,7 @@ selected Ubuntu distributions.
 
 \section{Implementation}
 The three protocols were implemented in Python. A server and client python program was written for each
-of respective protocols. Simulating transmission of data over the protocols therefore involved running a
+of the respective protocols. Simulating transmission of data over the protocols therefore involved running a
 separate process for each server on a node. Furthermore, single or multiple clients corresponding to these
 servers may be run on the same or different nodes.
 
@@ -63,8 +65,8 @@ seek to make use of a bash script for doing so. This feature was not strictly re
 
 \subsection{Extra Features Included}
 The server programs provide a real-time graph of data received through its protocol. This feature was found \emph{not} to impact the
-data collection significantly. For instance, saving the data instead of plotting it in real time-yielded similar bandwidth read-outs
-from the servers, indicating that the act of plotting did not affected the bandwidth throughput. 
+data collection significantly. For instance, saving the data instead of plotting it in real-time yielded similar bandwidth read-outs
+from the servers, indicating that the act of plotting did not affect the bandwidth throughput. 
 \paragraph{}
 The form of data collection measured the actual data sizes of the packets received by the servers. Consider that another metric 
 would be to count the number of packets received by the server, and consequently multiply it by the pre-determined packet sizes
@@ -87,7 +89,7 @@ bandwidth determined is returned by the \texttt{terminate} method.
 \section{Protocol Details}
 An outline of each of the protocols are given below, and the features provided by each. 
 
-\paragraph{TCP}
+\subsection{TCP}
 TCP is a \emph{connection-oriented} protocol that ensures reliable delivery of data over a network through bit streams. Key features
 that TCP provides are ordered data transfer, retransmission of lost packets, error-checking, flow control, and congestion control. 
 These features allow TCP to be considered ``reliable''. 
@@ -96,7 +98,7 @@ Most of the features mentioned make use of the fact that TCP implements a slidin
 window for sending and receiving data. Congestion control is afforded by four algorithms, namely, slow-start, congestion avoidance,
 fast retransmit, and fast recovery. 
 
-\paragraph{UDP}
+\subsection{UDP}
 UDP is a \emph{connectionless-oriented} protocol that does not rely on handshaking like TCP. It is considered ``unreliable'' as it 
 does not guarantee delivery of UDP datagrams (or messages) that are sent to a host. Furthermore, UDP does not implement
 any error-checking algorithms.
@@ -104,7 +106,7 @@ any error-checking algorithms.
 UDP is preferable to TCP in cases where waiting for packets is less desirable than dropping a few packets. UDP inherently provides
 shorter latencies, and thus has application in VoIP and online games. 
 
-\paragraph{DCCP}
+\subsection{DCCP}
 DCCP is a \emph{message-oriented} protocol, and provides a reliable connection between hosts. 
 The distinguishing feature of DCCP is that it it implements congestion control mechanisms at the transport layer,
  rather than assuming such control at the application layer.
@@ -196,13 +198,14 @@ outright. This contrasts greatly with UDP's effect as will be seen in
 
 Note also that the sum of the bandwidths used by TCCP and DCCP make use of the full spectrum of bandwidth available,
 but in a controlled manner. The bandwidth spikes are considered ``anomalies'',
-and are discussed in greater detail in \S\ref{complications}.
+and are discussed in greater detail in \S\ref{anom}.
 
 
 \subsection{DCCP, TCP, and UDP Bandwidth Usage}
+
 \label{contention}
 \subsubsection{DCCP and UDP}
-Consider the test set-up of DCCP as above, contending for bandwidth against the UDP
+Consider the test set-up of DCCP and TCP as above, contending for bandwidth against the UDP
 protocol:
 
 \begin{figure}[!h]
@@ -290,7 +293,7 @@ is eliminated:
 \includegraphics[scale=.52]{screens/re/Screenshot-7.png}
 \end{center}
 \end{figure}
-
+\clearpage
 However, unlike DCCP, TCP is able to make use of the available
 bandwidth when UDP is terminated:
 
@@ -325,7 +328,7 @@ previous sections.
 
 \begin{itemize}
  \item When DCCP consumes the majority of the bandwidth initially, the
-initialized TCP client can still operate at with a reasonable amount of
+initialized TCP client can still operate with a reasonable amount of
 bandwidth available.
  \item When one of the DCCP client batches is terminated, TCP's bandwidth
 raises actively.
@@ -340,28 +343,27 @@ available bandwidth, while DCCP is not.
 
 Having considered all of the above cases, the results can now be delivered
 conclusively.
-
+\paragraph{}
 Firstly, in \S\ref{tcpdccp} it was confirmed that DCCP tolerates TCP traffic to
 a
 much better extent than UDP. If TCP initially has a greater amount of incoming
 traffic, DCCP throttles itself accordingly. If DCCP initially has a greater
 amount of incoming traffic, TCP is still able to operate at a reasonable level.
-
+\paragraph{}
 Secondly, in \S\ref{contention}, it was established that UDP indeed suppresses
 TCP and DCCP traffic. However, it does not completely and utterly do so, as
 TCP and DCCP can operate at a very ineffective level of about 0.5 MB/s. 
-
+\paragraph{}
 Finally, it was interesting to note that while neither TCP or DCCP can hinder a
 large amount of incoming UDP traffic, only TCP can ``recover'' \emph{after} the
 UDP traffic stops. DCCP traffic, on the other hand, remains at the very low
 rate that UDP suppressed it to.
-
+\paragraph{}
 The reason behind this latter point is not absolutely clear. One speculated
-reason is that the congestion control behind DCCP throttles DCCP traffic only
-in relation to TCP traffic, and not UDP. Thus, where DCCP can effectively
-maintain a reasonable bandwidth while only TCP is running, it has no safeguards
-once there is UDP traffic incoming. Once this UDP traffic is eliminated, DCCP
-does not detect that it has stopped, and maintains a low throughput.
+reason is that this is not the final intended mode of operation for DCCP, and that it 
+\emph{should} be able to recover lost bandwidth when it becomes available. Since it is
+still in development, the congestion control algorithm may not yet take such a 
+situation into account. 
 
 \section{Problems and Interesting Findings}
 \label{complications}
@@ -407,8 +409,29 @@ in higher throughput and larger times resulted in lower throughput. It was hoped
 an ideal duration of time that would prevent the congestion control protocol from blocking the client,
 but ultimately the sleep interval was kept small to keep throughput high.
 
-\section{Conclusion}
+\subsection{Anomalies}
+\label{anom}
+Bandwidth spikes were observed for all three protocols. These tended to occur when other protocol
+clients were started or terminated in a concurrent set-up. This could be considered a ``burst'' 
+in throughput as bandwidth becomes available, after which the clients stabilize. 
 
+\section{Conclusion}
+The results outlined in this report gave a clear indication of DCCP's
+current operation on an Ubuntu distribution. It was evaluated with, and against,
+the TCP and UDP protocols.
+\paragraph{}
+The most pertinent discovery was that DCCP cannot recover lost bandwidth after
+it is suppressed by UDP traffic, whereas TCP can. Whether this is intentional
+is not entirely clear, and may be because DCCP is still being actively developed. 
+\paragraph{}
+Many complications arose when DCCP was used. It is clear that this protocol is not
+yet ready to be adopted by the industry. While it operates well in conjunction with 
+TCP, the overhead required in setting up a DCCP connection between hosts in 
+this case proved too inconvenient for it to be considered a sound option.
+\paragraph{}
+DCCP as a protocol displayed potential, but its inability to recover bandwidth after a flood
+of UDP traffic proved worrying. Thus, the adoption of DCCP may prove beneficial for streaming
+media applications, it still requires fine tuning. 
 
 
 \end{document}
